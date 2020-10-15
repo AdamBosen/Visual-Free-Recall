@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Visual Free Recall</title>
+		<script src="jspsych-6.1/jspsych.js"></script>
+		<script src="jspsych-6.1/plugins/jspsych-html-button-response.js"></script>
+		<script src="jspsych-6.1/plugins/jspsych-html-keyboard-response.js"></script>
+		<script src="jspsych-6.1/plugins/jspsych-instructions.js"></script>
+		<link href="jspsych-6.1/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+
+		<meta charset="UTF-8">
+	</head>
+	<body></body>
+	<script>
+
+		//Formatting for text shown at various parts of the experiment
+		const trialNumberStyle = '"text-align:center;font-size:24px;position:fixed; left:80vw; top: 70vh;transform: translate(-50%, -50%)"';
+		const experimentEndStyle = '"text-align:center;font-size:24px;position:fixed; left:50vw; top: 50vh;transform: translate(-50%, -50%)"';
+		
+
+		//Timeline:
+		//  Choose experimental file (or pull name from URL, ?sequence='xx')
+		//  Load experimental sequence
+		//  Iterate through trials in experimental sequence
+
+		//Load the experimental file based on the URLSearchParams,
+		const queryString = window.location.search;
+		const urlParams = new URLSearchParams(queryString);
+		const sequenceName = urlParams.get('sequence');
+		console.log(sequenceName);
+
+		//TODO: if sequence isn't set display instructions to add a sequence file query to the URL
+
+		const sequenceFilePath = "ExperimentSequences/" + sequenceName + ".txt";
+		console.log(sequenceFilePath);
+
+		//This GET request will work locally only if you are running a local web
+		//server to handle the request, JS by default doesn't let you get local files
+		//as that could be a major security issue.
+		var sequenceFileRequest = new XMLHttpRequest();
+		sequenceFileRequest.open("GET", sequenceFilePath,false);
+		sequenceFileRequest.send();
+		const sequenceText = sequenceFileRequest.responseText;
+		console.log(sequenceText)
+
+		const sequence = sequenceText.trim().split('\n');
+
+		//Go through the file sequence and add an audio-keyboard-response object for each file
+		var experimentTimeline = [];
+
+		var instructionScreen = {
+			type: 'instructions',
+			pages: [
+				'<br><br>You will see a long list of words one at a time.',
+				'<br><br>Try to remember as many words as you can.',
+				'<br><br>When the list stops, say as many words as you remember out loud.',
+				'<br>It is easier to start with words at the end of the list,<br>then repeat anything else you remember.',
+				'<br><br>Click Next to start the first list.'
+				],
+			show_clickable_nav: true
+		}
+
+		experimentTimeline = experimentTimeline.concat(instructionScreen)
+
+		var trialIndex = 0;
+		for (trialIndex = 0; trialIndex < sequence.length; trialIndex++)
+		{
+			//Split the sequence text into an array of words
+			wordList = sequence[trialIndex].split(',');
+			//This is a bit of a hack, each 'trial' has several elements
+			//to control for stimulus duration, ISI, and response period
+			for(wordIndex = 0; wordIndex < wordList.length; wordIndex++)
+			{
+				var showWord = {
+					type: 'html-keyboard-response',
+					stimulus: '<p style="font-family:Segoe UI;font-size: 48px">' + wordList[wordIndex] + '</p>',
+					choices: jsPsych.NO_KEYS,
+					prompt: '<p style = ' + trialNumberStyle + '>' + (trialIndex + 1) + " of " + sequence.length + "</p>",
+					trial_duration: 750,
+					response_ends_trial: false,
+				}
+				experimentTimeline = experimentTimeline.concat(showWord);
+
+				var interStimulusInterval = {
+					type: 'html-keyboard-response',
+					stimulus: "",
+					choices: jsPsych.NO_KEYS,
+					prompt: '<p style = ' + trialNumberStyle + '>' + (trialIndex + 1) + " of " + sequence.length + "</p>",
+					trial_duration: 250,
+					response_ends_trial: false,
+				}
+				experimentTimeline = experimentTimeline.concat(interStimulusInterval);
+			}
+
+			if(trialIndex < sequence.length-1)
+			{
+				var waitForClick = {
+					type: 'html-button-response',
+					stimulus:"<p>Say what you remember</p>" 
+						 + '<p style = ' + trialNumberStyle + '>' + (trialIndex + 1) + " of " + sequence.length + "</p>",
+					choices:['Click to start the next list']
+				}
+				experimentTimeline = experimentTimeline.concat(waitForClick);
+			} else {
+				var sequenceFinishedText = {
+					type: 'html-button-response',
+					stimulus: "<p>Say what you remember</p>" 
+						 + '<p style = ' + trialNumberStyle + '>' + (trialIndex + 1) + " of " + sequence.length + "</p>",
+					choices:['Click to end the experiment']
+				}
+				experimentTimeline = experimentTimeline.concat(sequenceFinishedText);
+			}
+		} 
+
+
+		jsPsych.init({
+			timeline: experimentTimeline,
+			preload: sequence,
+			on_finish: function() {
+				document.querySelector('body').innerHTML = '<p style = ' + experimentEndStyle + '>This block is finished.<br>You can close this window.</p>';
+			}
+		});
+
+	</script>
+</html>
