@@ -1,4 +1,4 @@
-# Online-AMDT
+# Visual Free Recall
 Website built in javascript using the jsPsych library to test memory in a visual free recall memory task.
 A running example of the most recent version of this script can be found here: https://6kopzqrw9w.cognition.run/?sequence=Demo
 
