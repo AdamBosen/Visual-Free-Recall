@@ -48,16 +48,27 @@
 		//Go through the file sequence and add an audio-keyboard-response object for each file
 		var experimentTimeline = [];
 
-		var instructionScreen = {
-			type: 'instructions',
-			pages: [
-				'<br><br>You will see a long list of words one at a time.',
-				'<br><br>Try to remember as many words as you can.',
-				'<br><br>When the list stops, say as many words as you remember out loud.',
-				'<br>It is easier to start with words at the end of the list,<br>then repeat anything else you remember.',
-				'<br><br>Click Next to start the first list.'
-				],
-			show_clickable_nav: true
+		let instructionScreen;
+		if(sequenceName != "Demo"){
+			var currentURL = window.location.href.split("?")[0];
+			var demoURL = currentURL + "?sequence=Demo";
+			instructionScreen = {
+				type: 'instructions',
+				pages: ['<h1><a href="' + demoURL + '" target="_blank">Click here for instructions and practice.</a></h1><br>Click next when you are ready to begin.'],
+				show_clickable_nav: true
+			}
+		} else {
+			instructionScreen = {
+				type: 'instructions',
+				pages: [
+					'<br><br>You will see a long list of words one at a time.',
+					'<br><br>Try to remember as many words as you can.',
+					'<br><br>When the list stops, say as many words as you remember out loud.',
+					'<br>It is easier to start with words at the end of the list,<br>then repeat anything else you remember.',
+					'<br><br>Click Next to start the first list.'
+					],
+				show_clickable_nav: true
+			}
 		}
 
 		experimentTimeline = experimentTimeline.concat(instructionScreen)
