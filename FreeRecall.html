@@ -50,6 +50,16 @@
 
 		let instructionScreen;
 		if(sequenceName != "Demo"){
+			
+			var enterSubjectID = {
+				type: 'survey-text',
+				questions:[{prompt: "Please enter your participant ID", name: 'SubjectID'}],
+				button_label: 'Log in'
+			}
+
+			experimentTimeline.push(enterSubjectID);
+
+
 			var currentURL = window.location.href.split("?")[0];
 			var demoURL = currentURL + "?sequence=Demo";
 			instructionScreen = {
@@ -71,7 +81,15 @@
 			}
 		}
 
-		experimentTimeline = experimentTimeline.concat(instructionScreen)
+		experimentTimeline.push(instructionScreen);
+
+		var waitForFirstClick = {
+				type: 'html-button-response',
+				stimulus:"<p>Get ready to remember words</p>" + '<p style = ' + trialNumberStyle + '>1 of ' + sequence.length + "</p>",
+				choices:['Click to see the first list of words']
+		}
+		experimentTimeline.push(waitForFirstClick);
+
 
 		var trialIndex = 0;
 		for (trialIndex = 0; trialIndex < sequence.length; trialIndex++)
@@ -90,7 +108,7 @@
 					trial_duration: 750,
 					response_ends_trial: false,
 				}
-				experimentTimeline = experimentTimeline.concat(showWord);
+				experimentTimeline.push(showWord);
 
 				var interStimulusInterval = {
 					type: 'html-keyboard-response',
@@ -100,7 +118,7 @@
 					trial_duration: 250,
 					response_ends_trial: false,
 				}
-				experimentTimeline = experimentTimeline.concat(interStimulusInterval);
+				experimentTimeline.push(interStimulusInterval);
 			}
 
 			if(trialIndex < sequence.length-1)
@@ -111,7 +129,7 @@
 						 + '<p style = ' + trialNumberStyle + '>' + (trialIndex + 1) + " of " + sequence.length + "</p>",
 					choices:['Click to start the next list']
 				}
-				experimentTimeline = experimentTimeline.concat(waitForClick);
+				experimentTimeline.push(waitForClick);
 			} else {
 				var sequenceFinishedText = {
 					type: 'html-button-response',
@@ -119,7 +137,7 @@
 						 + '<p style = ' + trialNumberStyle + '>' + (trialIndex + 1) + " of " + sequence.length + "</p>",
 					choices:['Click to end the experiment']
 				}
-				experimentTimeline = experimentTimeline.concat(sequenceFinishedText);
+				experimentTimeline.push(sequenceFinishedText);
 			}
 		} 
 
