@@ -6,18 +6,14 @@
 		<script src="jspsych-6.1/plugins/jspsych-html-button-response.js"></script>
 		<script src="jspsych-6.1/plugins/jspsych-html-keyboard-response.js"></script>
 		<script src="jspsych-6.1/plugins/jspsych-instructions.js"></script>
+		<script src="jspsych-6.1/plugins/jspsych-survey-text.js"></script>
 		<link href="jspsych-6.1/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+		<link href="/css/FreeRecall.css" rel="stylesheet" type="text/css"></link>
 
 		<meta charset="UTF-8">
 	</head>
 	<body></body>
-	<script>
-
-		//Formatting for text shown at various parts of the experiment
-		const trialNumberStyle = '"text-align:center;font-size:24px;position:fixed; left:80vw; top: 70vh;transform: translate(-50%, -50%)"';
-		const experimentEndStyle = '"text-align:center;font-size:24px;position:fixed; left:50vw; top: 50vh;transform: translate(-50%, -50%)"';
-		
-
+	<script> 
 		//Timeline:
 		//  Choose experimental file (or pull name from URL, ?sequence='xx')
 		//  Load experimental sequence
@@ -64,7 +60,7 @@
 			var demoURL = currentURL + "?sequence=Demo";
 			instructionScreen = {
 				type: 'instructions',
-				pages: ['<h1><a href="' + demoURL + '" target="_blank">Click here for instructions and practice.</a></h1><br>Click next when you are ready to begin.'],
+				pages: ['<h2>1. <a href="' + demoURL + '" target="_blank">Click here for instructions and practice.</a><br>2. Click next when you are ready to begin.</h2>'],
 				show_clickable_nav: true
 			}
 		} else {
@@ -85,7 +81,7 @@
 
 		var waitForFirstClick = {
 				type: 'html-button-response',
-				stimulus:"<p>Get ready to remember words</p>" + '<p style = ' + trialNumberStyle + '>1 of ' + sequence.length + "</p>",
+				stimulus:"<p>Get ready to remember words</p>" + '<p class="trialNumber">1 of ' + sequence.length + "</p>",
 				choices:['Click to see the first list of words']
 		}
 		experimentTimeline.push(waitForFirstClick);
@@ -102,9 +98,9 @@
 			{
 				var showWord = {
 					type: 'html-keyboard-response',
-					stimulus: '<p style="font-family:sans-serif;font-size: 48px">' + wordList[wordIndex] + '</p>',
+					stimulus: '<p class="word">' + wordList[wordIndex] + '</p>',
 					choices: jsPsych.NO_KEYS,
-					prompt: '<p style = ' + trialNumberStyle + '>' + (trialIndex + 1) + " of " + sequence.length + "</p>",
+					prompt: '<p class="trialNumber">' + (trialIndex + 1) + " of " + sequence.length + "</p>",
 					trial_duration: 750,
 					response_ends_trial: false,
 				}
@@ -114,7 +110,7 @@
 					type: 'html-keyboard-response',
 					stimulus: "",
 					choices: jsPsych.NO_KEYS,
-					prompt: '<p style = ' + trialNumberStyle + '>' + (trialIndex + 1) + " of " + sequence.length + "</p>",
+					prompt: '<p class="trialNumber">' + (trialIndex + 1) + " of " + sequence.length + "</p>",
 					trial_duration: 250,
 					response_ends_trial: false,
 				}
@@ -126,7 +122,7 @@
 				var waitForClick = {
 					type: 'html-button-response',
 					stimulus:"<p>Say what you remember</p>" 
-						 + '<p style = ' + trialNumberStyle + '>' + (trialIndex + 1) + " of " + sequence.length + "</p>",
+						 + '<p class="trialNumber">' + (trialIndex + 1) + " of " + sequence.length + "</p>",
 					choices:['Click to start the next list']
 				}
 				experimentTimeline.push(waitForClick);
@@ -134,7 +130,7 @@
 				var sequenceFinishedText = {
 					type: 'html-button-response',
 					stimulus: "<p>Say what you remember</p>" 
-						 + '<p style = ' + trialNumberStyle + '>' + (trialIndex + 1) + " of " + sequence.length + "</p>",
+						 + '<p class="trialNumber>' + (trialIndex + 1) + " of " + sequence.length + "</p>",
 					choices:['Click to end the experiment']
 				}
 				experimentTimeline.push(sequenceFinishedText);
@@ -146,7 +142,7 @@
 			timeline: experimentTimeline,
 			preload: sequence,
 			on_finish: function() {
-				document.querySelector('body').innerHTML = '<p style = ' + experimentEndStyle + '>This block is finished.<br>You can close this window.</p>';
+				document.querySelector('body').innerHTML = '<p class="experimentEnd">This block is finished.<br>You can close this window.</p>';
 			}
 		});
 
